@@ -6,40 +6,13 @@ import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import RestaurantIcon from '@material-ui/icons/Restaurant';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
 import { Recipe } from '../../interfaces/Recipe';
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    marginTop: 30,
-    width: '40vw',
-  },
-  media: {
-    height: 0,
-    paddingTop: '56.25%', // 16:9
-  },
-  chip: {
-    marginRight: 10,
-  },
-  expand: {
-    transform: 'rotate(0deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  },
-  expandOpen: {
-    transform: 'rotate(180deg)',
-  },
-  cardContent: {
-    paddingLeft: 20,
-  },
-}));
+import useStyles from './styles';
 
 const RecipeCard: React.FC<Recipe> = ({
   label,
@@ -57,18 +30,19 @@ const RecipeCard: React.FC<Recipe> = ({
   };
 
   const dietLabelList = useMemo(
-    () => dietLabels.length > 0 && dietLabels.map((label) => `${label} `),
+    () =>
+      dietLabels.length > 0 ? dietLabels.map((diet) => `${diet} `) : 'No diet',
     [dietLabels]
   );
 
   const healthLabelsList = useMemo(
     () =>
       healthLabels.length > 0 &&
-      healthLabels.map((label) => (
+      healthLabels.map((health) => (
         <Chip
           icon={<RestaurantIcon />}
-          label={label}
-          color="primary"
+          label={health}
+          color="secondary"
           variant="outlined"
           className={styles.chip}
         />
@@ -89,7 +63,14 @@ const RecipeCard: React.FC<Recipe> = ({
 
   return (
     <Card className={styles.root}>
-      <CardHeader title={label} subheader={dietLabelList} />
+      <CardHeader
+        title={
+          <Typography variant="h6" title={label} className={styles.header}>
+            {label}
+          </Typography>
+        }
+        subheader={dietLabelList}
+      />
       <CardMedia className={styles.media} image={image} title={label} />
       <CardContent className={styles.cardContent}>
         <Box display="flex" flexWrap="wrap">

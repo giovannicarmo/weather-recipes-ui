@@ -1,9 +1,10 @@
-import { Chip, Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
+import Chip from '@material-ui/core/Chip';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
@@ -11,7 +12,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import RestaurantIcon from '@material-ui/icons/Restaurant';
 import clsx from 'clsx';
 import React, { useMemo, useState } from 'react';
-import { Recipe } from '../../interfaces/Recipe';
+import Recipe from '../../interfaces/Recipe';
 import useStyles from './styles';
 
 const RecipeCard: React.FC<Recipe> = ({
@@ -38,8 +39,9 @@ const RecipeCard: React.FC<Recipe> = ({
   const healthLabelsList = useMemo(
     () =>
       healthLabels.length > 0 &&
-      healthLabels.map((health) => (
+      healthLabels.map((health, index) => (
         <Chip
+          key={index}
           icon={<RestaurantIcon />}
           label={health}
           color="secondary"
@@ -53,8 +55,8 @@ const RecipeCard: React.FC<Recipe> = ({
   const ingredientList = useMemo(
     () =>
       ingredientLines.length > 0 &&
-      ingredientLines.map((ingredient) => (
-        <li>
+      ingredientLines.map((ingredient, index) => (
+        <li key={index}>
           <Typography paragraph>{ingredient}</Typography>
         </li>
       )),

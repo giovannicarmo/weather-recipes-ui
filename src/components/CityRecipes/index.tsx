@@ -1,42 +1,17 @@
-import React, { useState, useCallback, useMemo, useEffect } from 'react';
-import {
-  Paper,
-  makeStyles,
-  TextField,
-  Button,
-  Box,
-  CircularProgress,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Paper from '@material-ui/core/Paper';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import SendIcon from '@material-ui/icons/Send';
-import { Recipe } from '../../interfaces/Recipe';
-import { Weather } from '../../interfaces/Wheater';
-import { api } from '../../services/api';
+import React, { useCallback, useMemo, useState } from 'react';
 import ENDPOINTS from '../../constants/endpoins';
+import Recipe from '../../interfaces/Recipe';
+import Weather from '../../interfaces/Wheater';
+import { api } from '../../services/api';
 import RecipeCard from '../RecipeCard';
-
-const flexColumn = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-};
-
-const useStyles = makeStyles(() => ({
-  paper: {
-    display: 'flex',
-    justifyContent: 'flex-end',
-    flexWrap: 'wrap',
-    alignItems: 'baseline',
-    minWidth: '45vw',
-    padding: '30px 5%',
-  },
-  field: {
-    flexBasis: '75%',
-  },
-  btn: {
-    flexBasis: '20%',
-    marginLeft: '5%',
-  },
-}));
+import useStyles from './styles';
 
 const CityRecipes = () => {
   const styles = useStyles();
@@ -61,35 +36,47 @@ const CityRecipes = () => {
 
   const searchResults = useCallback(async () => {
     setIsLoading(true);
-    await api
-      .get(ENDPOINTS.GET(city))
-      .then((res) => {
+    try {
+      await api.get(ENDPOINTS.GET(city)).then((res) => {
         const { weather, recipes } = res.data;
         setCityWeather(weather);
         setRecipeList(recipes);
-      })
-      .catch((err) => console.log(err));
+      });
+    } catch (err) {
+      console.log(err.response);
+    }
     setIsLoading(false);
   }, [city, setIsLoading, setCityWeather, setRecipeList]);
+
+  const CityCard = useMemo(
+    () =>
+      cityWeather && (
+        <Paper className={styles.city}>
+          <Typography variant="h6">{`${cityWeather.name}, ${cityWeather.country} - ${cityWeather.temp}°C`}</Typography>
+        </Paper>
+      ),
+    [cityWeather, styles.city]
+  );
 
   const RecipeCards = useMemo(
     () =>
       recipeList.length > 0 &&
-      recipeList.map((recipe) => <RecipeCard {...recipe} />),
+      recipeList.map((recipe, index) => <RecipeCard key={index} {...recipe} />),
     [recipeList]
   );
 
   return (
-    <Box {...flexColumn}>
+    <Box display="flex" flexDirection="column" alignItems="center">
       <Paper className={styles.paper}>
         <TextField
           id="city-name"
           label="Enter the city name"
           // defaultValue="Default Value"
-          helperText="Please, enter an English-equivalent name (for example: London, New York)"
+          helperText="Please, enter an English-equivalent name (for example: New York, London, Sao Paulo)"
           variant="outlined"
           className={styles.field}
-          onChange={(event) => setCity(event.target.value)}
+          disabled={isLoading}
+          onChange={(event) => setCity(event.target.value.trim())}
         />
         <Button
           variant="contained"
@@ -102,7 +89,13 @@ const CityRecipes = () => {
           Send
         </Button>
       </Paper>
-      <Box display="flex" flexWrap="wrap" justifyContent="space-between">
+      {CityCard}
+      <Box
+        display="flex"
+        justifyContent="center"
+        flexWrap="wrap"
+        alignItems="baseline"
+      >
         {RecipeCards}
       </Box>
     </Box>
